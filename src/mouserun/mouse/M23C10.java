@@ -95,6 +95,7 @@ public class M23C10 extends Mouse {
             movimientoPosibleAleatorio = aleatorio.nextInt(listaMovimientos.size());
             movimientoFinal = listaMovimientos.get(movimientoPosibleAleatorio);
             pilaMovimientos.push(movimientoFinal);
+            incExploredGrids();
         } else if (!pilaMovimientos.isEmpty()) {
             ultimoMovimiento = pilaMovimientos.pop();
             switch (ultimoMovimiento) {
