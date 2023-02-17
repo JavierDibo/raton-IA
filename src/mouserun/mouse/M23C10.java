@@ -21,7 +21,7 @@ public class M23C10 extends Mouse {
 
     // Para mostrar mensajes System.err.println();
     public M23C10() {
-        super("JFDG");
+        super("JD-CO");
         celdasVisitadas = new HashMap<>();
         pilaMovimientos = new Stack<>();
     }
@@ -54,26 +54,22 @@ public class M23C10 extends Mouse {
      */
     public void movimientosPosibles(Grid celdaActual, ArrayList<Integer> listaMovimientos) {
 
-        int posX, posY, direccion;
+        int posX, posY;
 
         posX = celdaActual.getX();
         posY = celdaActual.getY();
 
         if (celdaActual.canGoUp()) {
-            direccion = Mouse.UP;
-            registrarCamino(posX, posY + 1, direccion, listaMovimientos);
+            registrarCamino(posX, posY + 1, Mouse.UP, listaMovimientos);
         }
         if (celdaActual.canGoDown()) {
-            direccion = Mouse.DOWN;
-            registrarCamino(posX, posY - 1, direccion, listaMovimientos);
+            registrarCamino(posX, posY - 1, Mouse.DOWN, listaMovimientos);
         }
         if (celdaActual.canGoLeft()) {
-            direccion = Mouse.LEFT;
-            registrarCamino(posX - 1, posY, direccion, listaMovimientos);
+            registrarCamino(posX - 1, posY, Mouse.LEFT, listaMovimientos);
         }
         if (celdaActual.canGoRight()) {
-            direccion = Mouse.RIGHT;
-            registrarCamino(posX + 1, posY, direccion, listaMovimientos);
+            registrarCamino(posX + 1, posY, Mouse.RIGHT, listaMovimientos);
         }
     }
 
