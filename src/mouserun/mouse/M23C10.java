@@ -18,33 +18,25 @@ public class M23C10 extends Mouse {
     private int movAnterior;
 
     // (Cordenadas, celda)
-    private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
-
-    private Stack<Grid> pilaCeldasVisitadas;
-
-    private Stack<Integer> pilaMoviemientosRealizados;
+    private final HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
+    private final Stack<Integer> pilaMovimientos;
 
     // Para mostrar mensajes System.err.println();
     public M23C10() {
         super("JFDG");
         celdasVisitadas = new HashMap<>();
-        pilaCeldasVisitadas = new Stack<>();
-        pilaMoviemientosRealizados = new Stack<>();
+        pilaMovimientos = new Stack<>();
     }
 
-    public void movimientosDireccion(int posX, int posY, int direccion, Grid celdaActual, ArrayList<Integer> listaMoviemientosNuevos, ArrayList<Integer> listaMovimientosBuenos, ArrayList<Integer> listaMovimientosMalos) {
+    public void movimientosDireccion(int posX, int posY, int direccion, ArrayList<Integer> listaMovimientos) {
         Pair<Integer, Integer> coordeandas;
         coordeandas = new Pair<>(posX, posY);
         if (!celdasVisitadas.containsKey(coordeandas)) {
-            listaMoviemientosNuevos.add(direccion);
-        } else if (celdaEsDistinta(direccion, celdaActual)) {
-            listaMovimientosBuenos.add(direccion);
-        } else {
-            listaMovimientosMalos.add(direccion);
+            listaMovimientos.add(direccion);
         }
     }
 
-    public void movimientosPosibles(Grid celdaActual, ArrayList<Integer> listaMoviemientosNuevos, ArrayList<Integer> listaMovimientosBuenos, ArrayList<Integer> listaMovimientosMalos) {
+    public void movimientosPosibles(Grid celdaActual, ArrayList<Integer> listaMovimientos) {
 
         int posX, posY, direccion;
 
@@ -53,69 +45,64 @@ public class M23C10 extends Mouse {
 
         if (celdaActual.canGoUp()) {
             direccion = Mouse.UP;
-            movimientosDireccion(posX, posY + 1, direccion, celdaActual, listaMoviemientosNuevos, listaMovimientosBuenos, listaMovimientosMalos);
+            movimientosDireccion(posX, posY + 1, direccion, listaMovimientos);
         }
         if (celdaActual.canGoDown()) {
             direccion = Mouse.DOWN;
-            movimientosDireccion(posX, posY - 1, direccion, celdaActual, listaMoviemientosNuevos, listaMovimientosBuenos, listaMovimientosMalos);
+            movimientosDireccion(posX, posY - 1, direccion, listaMovimientos);
         }
         if (celdaActual.canGoLeft()) {
             direccion = Mouse.LEFT;
-            movimientosDireccion(posX - 1, posY, direccion, celdaActual, listaMoviemientosNuevos, listaMovimientosBuenos, listaMovimientosMalos);
+            movimientosDireccion(posX - 1, posY, direccion, listaMovimientos);
         }
         if (celdaActual.canGoRight()) {
             direccion = Mouse.RIGHT;
-            movimientosDireccion(posX + 1, posY, direccion, celdaActual, listaMoviemientosNuevos, listaMovimientosBuenos, listaMovimientosMalos);
+            movimientosDireccion(posX + 1, posY, direccion, listaMovimientos);
         }
-
-        System.err.println("\nMov nuevos: " + listaMoviemientosNuevos.toString() + "\nMov malos: " +
-                listaMovimientosMalos.toString() + "\nMov buenos: " + listaMovimientosBuenos.toString() + "\n\n");
     }
 
     @Override
     public int move(Grid celdaActual, Cheese cheese) {
 
         Random aleatorio;
-        ArrayList<Integer> listaMovimientosBuenos, listaMovimientosMalos, listaMovimientosNuevos;
-        int movimientoPosibleAleatorio, posX, posY;
-        boolean hayMovimientosBuenos, hayMovimientosNuevos;
+        ArrayList<Integer> listaMovimientos;
+        int movimientoPosibleAleatorio, posX, posY, movimientoFinal, ultimoMovimiento;
+        boolean hayMovimientosNuevos;
         Pair<Integer, Integer> coordenadas;
 
-        listaMovimientosBuenos = new ArrayList<>();
-        listaMovimientosMalos = new ArrayList<>();
-        listaMovimientosNuevos = new ArrayList<>();
+        listaMovimientos = new ArrayList<>();
         aleatorio = new Random();
 
+        movimientoFinal = Mouse.BOMB;
         posX = celdaActual.getX();
         posY = celdaActual.getY();
         coordenadas = new Pair<>(posX, posY);
 
         celdasVisitadas.put(coordenadas, celdaActual);
 
-        movimientosPosibles(celdaActual, listaMovimientosNuevos, listaMovimientosBuenos, listaMovimientosMalos);
+        movimientosPosibles(celdaActual, listaMovimientos);
 
-        hayMovimientosBuenos = !listaMovimientosBuenos.isEmpty();
-        hayMovimientosNuevos = !listaMovimientosNuevos.isEmpty();
+        hayMovimientosNuevos = !listaMovimientos.isEmpty();
 
         if (hayMovimientosNuevos) {
-            movimientoPosibleAleatorio = aleatorio.nextInt(listaMovimientosNuevos.size());
-            ultimaCeldaVisitada = celdaActual;
-            pilaCeldasVisitadas.push(celdaActual);
-            return listaMovimientosNuevos.get(movimientoPosibleAleatorio);
-        } else if (hayMovimientosBuenos) {
-            movimientoPosibleAleatorio = aleatorio.nextInt(listaMovimientosBuenos.size());
-            pilaCeldasVisitadas.push(celdaActual);
-            ultimaCeldaVisitada = celdaActual;
-            return listaMovimientosBuenos.get(movimientoPosibleAleatorio);
+            movimientoPosibleAleatorio = aleatorio.nextInt(listaMovimientos.size());
+            movimientoFinal = listaMovimientos.get(movimientoPosibleAleatorio);
+            pilaMovimientos.push(movimientoFinal);
+        } else if (!pilaMovimientos.isEmpty()) {
+            ultimoMovimiento = pilaMovimientos.pop();
+            switch (ultimoMovimiento) {
+                case Mouse.UP -> movimientoFinal = Mouse.DOWN;
+                case Mouse.DOWN -> movimientoFinal = Mouse.UP;
+                case Mouse.RIGHT -> movimientoFinal = Mouse.LEFT;
+                case Mouse.LEFT -> movimientoFinal = Mouse.RIGHT;
+            }
         } else {
-            movimientoPosibleAleatorio = aleatorio.nextInt(listaMovimientosMalos.size());
-            pilaCeldasVisitadas.push(celdaActual);
-            ultimaCeldaVisitada = celdaActual;
-            return listaMovimientosMalos.get(movimientoPosibleAleatorio);
+            movimientoFinal = aleatorio.nextInt(4) + 1;
+            System.err.print("Todas las casillas han sido exploradas");
         }
 
-
-
+        System.err.println("Num celdas exploradas=" + celdasVisitadas.size());
+        return movimientoFinal;
     }
 
     @Override
