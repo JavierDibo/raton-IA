@@ -15,8 +15,6 @@ import mouserun.game.Cheese;
  */
 public class M23C10 extends Mouse {
     private Grid ultimaCeldaVisitada;
-    private int movAnterior;
-
     // (Cordenadas, celda)
     private final HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
     private final Stack<Integer> pilaMovimientos;
@@ -28,7 +26,17 @@ public class M23C10 extends Mouse {
         pilaMovimientos = new Stack<>();
     }
 
-    public void movimientosDireccion(int posX, int posY, int direccion, ArrayList<Integer> listaMovimientos) {
+    /**
+     * Este método registra el movimiento actual del ratón en las coordenadas dadas en la lista de movimientos,
+     * si es que estas coordenadas aún no han sido visitadas. Este método utiliza un objeto Pair para almacenar
+     * las coordenadas en un par ordenado y un Map para realizar una búsqueda eficiente de coordenadas visitadas.
+     *
+     * @param posX             la coordenada x del movimiento actual del ratón.
+     * @param posY             la coordenada y del movimiento actual del ratón.
+     * @param direccion        la dirección del movimiento actual del ratón.
+     * @param listaMovimientos la lista de movimientos en la que se registrará el movimiento actual si es que estas coordenadas aún no han sido visitadas.
+     */
+    public void registrarCamino(int posX, int posY, int direccion, ArrayList<Integer> listaMovimientos) {
         Pair<Integer, Integer> coordeandas;
         coordeandas = new Pair<>(posX, posY);
         if (!celdasVisitadas.containsKey(coordeandas)) {
@@ -36,6 +44,14 @@ public class M23C10 extends Mouse {
         }
     }
 
+    /**
+     * Este método calcula los movimientos posibles que el ratón puede hacer en la celda actual en el laberinto.
+     * Se basa en las celdas vecinas de la celda actual y llama al método registrarCamino() para agregar los movimientos
+     * posibles a la lista de movimientos pasada como parámetro.
+     *
+     * @param celdaActual      la celda actual en la que se encuentra el ratón.
+     * @param listaMovimientos la lista de movimientos posibles a la que se agregarán los movimientos calculados.
+     */
     public void movimientosPosibles(Grid celdaActual, ArrayList<Integer> listaMovimientos) {
 
         int posX, posY, direccion;
@@ -45,44 +61,39 @@ public class M23C10 extends Mouse {
 
         if (celdaActual.canGoUp()) {
             direccion = Mouse.UP;
-            movimientosDireccion(posX, posY + 1, direccion, listaMovimientos);
+            registrarCamino(posX, posY + 1, direccion, listaMovimientos);
         }
         if (celdaActual.canGoDown()) {
             direccion = Mouse.DOWN;
-            movimientosDireccion(posX, posY - 1, direccion, listaMovimientos);
+            registrarCamino(posX, posY - 1, direccion, listaMovimientos);
         }
         if (celdaActual.canGoLeft()) {
             direccion = Mouse.LEFT;
-            movimientosDireccion(posX - 1, posY, direccion, listaMovimientos);
+            registrarCamino(posX - 1, posY, direccion, listaMovimientos);
         }
         if (celdaActual.canGoRight()) {
             direccion = Mouse.RIGHT;
-            movimientosDireccion(posX + 1, posY, direccion, listaMovimientos);
+            registrarCamino(posX + 1, posY, direccion, listaMovimientos);
         }
     }
 
-    @Override
-    public int move(Grid celdaActual, Cheese cheese) {
+    /**
+     * Este método decide el siguiente movimiento del ratón en el laberinto. Si hay movimientos nuevos disponibles,
+     * elige uno al azar y lo agrega a una pila de movimientos. Si no hay movimientos nuevos disponibles y la pila de
+     * movimientos no está vacía, retrocede al último movimiento en la pila. Si no hay movimientos nuevos disponibles y
+     * la pila de movimientos está vacía, elige un movimiento al azar.
+     *
+     * @param hayMovimientosNuevos un indicador booleano que indica si hay movimientos nuevos disponibles.
+     * @param listaMovimientos     la lista de movimientos posibles a partir de la celda actual.
+     * @return el siguiente movimiento del ratón a realizar.
+     */
+    public int decidirMovimiento(boolean hayMovimientosNuevos, ArrayList<Integer> listaMovimientos) {
 
+        int movimientoPosibleAleatorio, movimientoFinal, ultimoMovimiento;
         Random aleatorio;
-        ArrayList<Integer> listaMovimientos;
-        int movimientoPosibleAleatorio, posX, posY, movimientoFinal, ultimoMovimiento;
-        boolean hayMovimientosNuevos;
-        Pair<Integer, Integer> coordenadas;
 
-        listaMovimientos = new ArrayList<>();
         aleatorio = new Random();
-
-        movimientoFinal = Mouse.BOMB;
-        posX = celdaActual.getX();
-        posY = celdaActual.getY();
-        coordenadas = new Pair<>(posX, posY);
-
-        celdasVisitadas.put(coordenadas, celdaActual);
-
-        movimientosPosibles(celdaActual, listaMovimientos);
-
-        hayMovimientosNuevos = !listaMovimientos.isEmpty();
+        movimientoFinal = 0;
 
         if (hayMovimientosNuevos) {
             movimientoPosibleAleatorio = aleatorio.nextInt(listaMovimientos.size());
@@ -98,10 +109,44 @@ public class M23C10 extends Mouse {
             }
         } else {
             movimientoFinal = aleatorio.nextInt(4) + 1;
-            System.err.print("Todas las casillas han sido exploradas");
         }
 
-        System.err.println("Num celdas exploradas=" + celdasVisitadas.size());
+        return movimientoFinal;
+    }
+
+    /**
+     * Este método mueve el ratón a la siguiente celda del laberinto. Primero registra la celda actual en un Map para
+     * evitar visitas repetidas, luego genera una lista de movimientos posibles a partir de la celda actual y elige un
+     * movimiento utilizando el método decidirMovimiento(). Finalmente, devuelve el movimiento elegido.
+     *
+     * @param celdaActual la celda actual en la que se encuentra el ratón.
+     * @param cheese      el queso que el ratón está buscando.
+     * @return el siguiente movimiento del ratón a realizar.
+     */
+    @Override
+    public int move(Grid celdaActual, Cheese cheese) {
+
+        ArrayList<Integer> listaMovimientos;
+        int posX, posY, movimientoFinal;
+        boolean hayMovimientosNuevos;
+        Pair<Integer, Integer> coordenadas;
+
+        listaMovimientos = new ArrayList<>();
+
+        posX = celdaActual.getX();
+        posY = celdaActual.getY();
+        coordenadas = new Pair<>(posX, posY);
+
+        celdasVisitadas.put(coordenadas, celdaActual);
+
+        movimientosPosibles(celdaActual, listaMovimientos);
+
+        hayMovimientosNuevos = !listaMovimientos.isEmpty();
+
+        movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos);
+
+        // System.err.println("Num celdas exploradas=" + celdasVisitadas.size());
+
         return movimientoFinal;
     }
 
