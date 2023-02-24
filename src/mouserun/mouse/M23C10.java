@@ -24,6 +24,7 @@ public class M23C10 extends Mouse {
         super("JD-CO");
         celdasVisitadas = new HashMap<>();
         pilaMovimientos = new Stack<>();
+        incExploredGrids();
     }
 
     /**
