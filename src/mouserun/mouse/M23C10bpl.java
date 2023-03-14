@@ -15,7 +15,7 @@ import mouserun.game.Cheese;
  */
 public class M23C10bpl extends Mouse {
     private final static int MAS_PRIORITARIO = 0;
-    private final static int LIMITE = 10;
+    private final static int LIMITE = 400;
     private static Boolean mostrar = true;
     private Grid ultimaCeldaVisitada;
     // (Cordenadas, celda)
@@ -90,6 +90,24 @@ public class M23C10bpl extends Mouse {
         }
     }
 
+    public int movimientoRigido(Grid celdaActual) {
+
+        if (celdaActual.canGoLeft()) {
+            return Mouse.LEFT;
+        }
+        if (celdaActual.canGoUp()) {
+            return Mouse.UP;
+        }
+        if (celdaActual.canGoRight()) {
+            return Mouse.RIGHT;
+        }
+        if (celdaActual.canGoDown()) {
+            return Mouse.DOWN;
+        }
+
+        return 0;
+    }
+
     /**
      * Este método decide el siguiente movimiento del ratón en el laberinto. Si hay movimientos nuevos disponibles,
      * elige uno al azar y lo agrega a una pila de movimientos. Si no hay movimientos nuevos disponibles y la pila de
@@ -100,12 +118,10 @@ public class M23C10bpl extends Mouse {
      * @param listaMovimientos     la lista de movimientos posibles a partir de la celda actual.
      * @return el siguiente movimiento del ratón a realizar.
      */
-    public int decidirMovimiento(boolean hayMovimientosNuevos, ArrayList<Integer> listaMovimientos) {
+    public int decidirMovimiento(boolean hayMovimientosNuevos, ArrayList<Integer> listaMovimientos, Grid celdaActual) {
 
         int movimientoFinal, ultimoMovimiento;
-        Random aleatorio;
 
-        aleatorio = new Random();
         movimientoFinal = 0;
 
         if (hayMovimientosNuevos) {
@@ -125,7 +141,7 @@ public class M23C10bpl extends Mouse {
                 System.err.println("El raton " + this.getName() + " ha recorrido el laberinto entero");
                 mostrar = false;
             }
-            movimientoFinal = aleatorio.nextInt(4) + 1;
+            movimientoFinal = movimientoRigido(celdaActual);
         }
 
         return movimientoFinal;
@@ -160,7 +176,7 @@ public class M23C10bpl extends Mouse {
 
         hayMovimientosNuevos = !listaMovimientos.isEmpty();
 
-        movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos);
+        movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos, celdaActual);
 
         // System.err.println("Num celdas exploradas=" + celdasVisitadas.size());
 
