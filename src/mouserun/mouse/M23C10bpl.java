@@ -16,6 +16,7 @@ import mouserun.game.Cheese;
 public class M23C10bpl extends Mouse {
     private final static int MAS_PRIORITARIO = 0;
     private final static int LIMITE = 10;
+    private static Boolean mostrar = true;
     private Grid ultimaCeldaVisitada;
     // (Cordenadas, celda)
     private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
@@ -58,7 +59,9 @@ public class M23C10bpl extends Mouse {
     /**
      * Este método calcula los movimientos posibles que el ratón puede hacer en la celda actual en el laberinto.
      * Se basa en las celdas vecinas de la celda actual y llama al método registrarCamino() para agregar los movimientos
-     * posibles a la lista de movimientos pasada como parámetro.
+     * posibles a la lista de movimientos pasada como parámetro. Tiene en cuenta el limite de profundidad, si este se
+     * alcanza se deja de tener en cuenta los posibles caminos, pues se consideran fuera de limites. Se toma una decision
+     * a la hora de elegir ramas en el arbol, el raton toma los caminos en sentido horario comenzando por la izquierda.
      *
      * @param celdaActual      la celda actual en la que se encuentra el ratón.
      * @param listaMovimientos la lista de movimientos posibles a la que se agregarán los movimientos calculados.
@@ -118,7 +121,10 @@ public class M23C10bpl extends Mouse {
                 case Mouse.LEFT -> movimientoFinal = Mouse.RIGHT;
             }
         } else {
-            System.err.println("Se ha recorrido el laberinto entero");
+            if (mostrar) {
+                System.err.println("El raton " + this.getName() + " ha recorrido el laberinto entero");
+                mostrar = false;
+            }
             movimientoFinal = aleatorio.nextInt(4) + 1;
         }
 
@@ -161,9 +167,12 @@ public class M23C10bpl extends Mouse {
         return movimientoFinal;
     }
 
+    /**
+     * Se ejecuta cuando se encuentra un nuevo queso. Como el queso puede ser encontrado por otro agente, se resetea
+     * la informacion local para poder tener las misma oportunidades de encontrar el queso.
+     */
     @Override
     public void newCheese() {
-
         celdasVisitadas = new HashMap<Pair<Integer, Integer>, Grid>();
         pilaMovimientos = new Stack<Integer>();
     }

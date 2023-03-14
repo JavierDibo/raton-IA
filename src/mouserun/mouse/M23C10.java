@@ -18,6 +18,7 @@ public class M23C10 extends Mouse {
     // (Cordenadas, celda)
     private final HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
     private final Stack<Integer> pilaMovimientos;
+    private static Boolean mostrar = true;
 
     // Para mostrar mensajes System.err.println();
     public M23C10() {
@@ -106,6 +107,10 @@ public class M23C10 extends Mouse {
                 case Mouse.LEFT -> movimientoFinal = Mouse.RIGHT;
             }
         } else {
+            if (mostrar) {
+                System.err.println("El raton " + this.getName() + " ha recorrido el laberinto entero");
+                mostrar = false;
+            }
             movimientoFinal = aleatorio.nextInt(4) + 1;
         }
 
@@ -150,7 +155,7 @@ public class M23C10 extends Mouse {
 
     @Override
     public void newCheese() {
-
+        System.err.println("El raton " + this.getName() + " ha encontrado el queso");
     }
 
     @Override
