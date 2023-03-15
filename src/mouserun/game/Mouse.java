@@ -21,7 +21,7 @@ package mouserun.game;
 
 /**
  * Abstract Class Mouse should be the base class of all Mouse implementations. Players
- * implementing the Mouse must implement all abstract methods and place the mouse in 
+ * implementing the Mouse must implement all abstract methods and place the mouse in
  * the mouserun.mouse package. MouseLoader will locate all mouse implementation in the
  * package.
  */
@@ -45,6 +45,7 @@ public abstract class Mouse {
 
     /**
      * Creates a new instance of Mouse.
+     *
      * @param name The name of the Mouse to appear in the game interface.
      */
     public Mouse(String name) {
@@ -55,6 +56,7 @@ public abstract class Mouse {
 
     /**
      * Get the name of the mouse that appears on the game interface.
+     *
      * @return The name of the mouse.
      */
     public String getName() {
@@ -66,10 +68,15 @@ public abstract class Mouse {
     /**
      * Get the current number of unique visited grids.
      * It must be managed by the user himself
+     *
      * @return number of unique visited grids
      */
     public long getExploredGrids() {
         return this.exploredGrids;
+    }
+
+    public void resetExploredGrids() {
+        exploredGrids = 0;
     }
 
     // New: 01-21-2016
@@ -77,6 +84,7 @@ public abstract class Mouse {
     /**
      * Increment the current number of unique visited grids.
      * Use it fairly
+     *
      * @return updated number of unique visited grids
      */
     public long incExploredGrids() {
@@ -88,6 +96,7 @@ public abstract class Mouse {
     /**
      * Get the current number of visited grids (steps).
      * It must be managed by the user himself
+     *
      * @return total number of visited grids (steps)
      */
     public long getSteps() {
@@ -99,6 +108,7 @@ public abstract class Mouse {
     /**
      * Increment the steps (visited grids) given by the mouse.
      * Do not call this method, it is automatically managed by the application
+     *
      * @return updated number of visited grids (steps)
      */
     public long incSteps() {
@@ -111,8 +121,9 @@ public abstract class Mouse {
      * move the Mouse next. Use the Mouse.UP, Mouse.DOWN, Mouse.LEFT, Mouse.RIGHT,
      * Mouse.BOMB as options for the decision. Players can do that is need to implement
      * an intelligent mouse.
+     *
      * @param currentGrid The current grid the Mouse is at.
-     * @param cheese The cheese to be seek.
+     * @param cheese      The cheese to be seek.
      * @return The decision to move the mouse. Use Mouse.UP, Mouse.DOWN, Mouse.LEFT, Mouse.RIGHT, Mouse.BOMB
      */
     public abstract int move(Grid currentGrid, Cheese cheese);

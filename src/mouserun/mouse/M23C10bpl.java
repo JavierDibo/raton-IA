@@ -2,7 +2,6 @@ package mouserun.mouse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.Stack;
 
 import mouserun.game.Mouse;
@@ -15,20 +14,20 @@ import mouserun.game.Cheese;
  */
 public class M23C10bpl extends Mouse {
     private final static int MAS_PRIORITARIO = 0;
-    private final static int LIMITE = 400;
+    private final static int LIMITE = 200;
     private static Boolean mostrar = true;
     private Grid ultimaCeldaVisitada;
     // (Cordenadas, celda)
     private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
+    private HashMap<Pair<Integer, Integer>, Grid> celdasTotales;
     private Stack<Integer> pilaMovimientos;
-    int limiteDecisiones;
 
     // Para mostrar mensajes System.err.println();
     public M23C10bpl() {
         super("JD-CO-bpl");
         celdasVisitadas = new HashMap<>();
+        celdasTotales = new HashMap<>();
         pilaMovimientos = new Stack<>();
-        limiteDecisiones = 0;
         incExploredGrids();
     }
 
@@ -47,12 +46,6 @@ public class M23C10bpl extends Mouse {
         coordeandas = new Pair<>(posX, posY);
         if (!celdasVisitadas.containsKey(coordeandas)) {
             listaMovimientos.add(direccion);
-            /*======================*/
-            if (limiteDecisiones <= LIMITE && listaMovimientos.size() > 1) {
-                limiteDecisiones++;
-                return;
-            }
-
         }
     }
 
@@ -137,10 +130,6 @@ public class M23C10bpl extends Mouse {
                 case Mouse.LEFT -> movimientoFinal = Mouse.RIGHT;
             }
         } else {
-            if (mostrar) {
-                System.err.println("El raton " + this.getName() + " ha recorrido el laberinto entero");
-                mostrar = false;
-            }
             movimientoFinal = movimientoRigido(celdaActual);
         }
 
@@ -170,6 +159,9 @@ public class M23C10bpl extends Mouse {
         posY = celdaActual.getY();
         coordenadas = new Pair<>(posX, posY);
 
+        if (!celdasTotales.containsKey(coordenadas))
+            celdasTotales.put(coordenadas, celdaActual);
+
         celdasVisitadas.put(coordenadas, celdaActual);
 
         movimientosPosibles(celdaActual, listaMovimientos);
@@ -178,7 +170,7 @@ public class M23C10bpl extends Mouse {
 
         movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos, celdaActual);
 
-        // System.err.println("Num celdas exploradas=" + celdasVisitadas.size());
+        System.err.println("Pasos=" + (int) this.getSteps() + ", Casillas Exploradas=" + celdasTotales.size() + ", RatioExp=" + (float) celdasTotales.size() / 400 + ", CeldasAhora=" + celdasVisitadas.size());
 
         return movimientoFinal;
     }
@@ -195,7 +187,8 @@ public class M23C10bpl extends Mouse {
 
     @Override
     public void respawned() {
-
+        pilaMovimientos = new Stack<Integer>();
+        celdasVisitadas = new HashMap<Pair<Integer, Integer>, Grid>();
     }
 
     /**
