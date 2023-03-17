@@ -79,9 +79,9 @@ public class M23C10bpl extends Mouse {
 
     /**
      * Este metodo decide el siguiente movimiento del raton en el laberinto. Si hay movimientos nuevos disponibles,
-     * elige uno al azar y lo agrega a una pila de movimientos. Si no hay movimientos nuevos disponibles y la pila de
-     * movimientos no esta vacia, retrocede al ultimo movimiento en la pila. Si no hay movimientos nuevos disponibles y
-     * la pila de movimientos esta vacia, elige un movimiento al azar.
+     * elige el mas prioritario entre ellos y lo agrega a una pila de movimientos. Si no hay movimientos nuevos
+     * disponibles y la pila de movimientos no esta vacia, retrocede al ultimo movimiento en la pila. Si no hay
+     * movimientos nuevos disponibles y la pila de movimientos esta vacia, elige un movimiento al azar.
      *
      * @param hayMovimientosNuevos un indicador booleano que indica si hay movimientos nuevos disponibles.
      * @param listaMovimientos     la lista de movimientos posibles a partir de la celda actual.
@@ -150,6 +150,11 @@ public class M23C10bpl extends Mouse {
         return movimientoFinal;
     }
 
+    /**
+     * Este metodo se ejecuta cuando se encuentra un queso. Como el queso aparece aleatoriamente, se borra la memoria
+     * del agente para otorgarle la posibilidad de comenzar nuevamente la busqueda de este. Cabe notar que el queso
+     * puede estar fuera de limites, en cuyo caso el raton exploraria todo el laberinto sin encontrarlo.
+     */
     @Override
     public void newCheese() {
         celdasVisitadas = new HashMap<Pair<Integer, Integer>, Grid>();
