@@ -48,10 +48,11 @@ public class M23C10extra extends Mouse {
 
     /**
      * Este metodo calcula los movimientos posibles que el raton puede hacer en la celda actual en el laberinto.
-     * Se basa en las celdas vecinas de la celda actual y llama al metodo registrarCamino() para agregar los movimientos
-     * posibles a la lista de movimientos pasada como parametro. Tiene en cuenta el limite de profundidad, si este se
-     * alcanza se deja de tener en cuenta los posibles caminos, pues se consideran fuera de limites. Se toma una decision
-     * a la hora de elegir ramas en el arbol, el raton toma los caminos en sentido horario comenzando por la izquierda.
+     * Se basa en las celdas vecinas de la celda actual y llama al metodo registrarCamino() para agregar los
+     * movimientos posibles a la lista de movimientos pasada como parametro. Tiene en cuenta el limite de profundidad,
+     * si este se alcanza se deja de tener en cuenta los posibles caminos, pues se consideran fuera de limites. Se toma
+     * una decision a la hora de elegir ramas en el arbol, el raton toma los caminos en sentido horario comenzando por
+     * la izquierda.
      *
      * @param celdaActual      la celda actual en la que se encuentra el raton.
      * @param listaMovimientos la lista de movimientos posibles a la que se agregaran los movimientos calculados.
@@ -107,9 +108,9 @@ public class M23C10extra extends Mouse {
 
     /**
      * Este metodo decide el siguiente movimiento del raton en el laberinto. Si hay movimientos nuevos disponibles,
-     * elige el mas prioritario entre ellos y lo agrega a una pila de movimientos. Si no hay movimientos nuevos disponibles y la pila de
-     * movimientos no esta vacia, retrocede al ultimo movimiento en la pila. Si no hay movimientos nuevos disponibles y
-     * la pila de movimientos esta vacia, elige un movimiento en un orden concreto.
+     * elige el mas prioritario entre ellos y lo agrega a una pila de movimientos. Si no hay movimientos nuevos
+     * disponibles y la pila de movimientos no esta vacia, retrocede al ultimo movimiento en la pila. Si no hay
+     * movimientos nuevos disponibles y la pila de movimientos esta vacia, elige un movimiento en un orden concreto.
      *
      * @param hayMovimientosNuevos un indicador booleano que indica si hay movimientos nuevos disponibles.
      * @param listaMovimientos     la lista de movimientos posibles a partir de la celda actual.
@@ -175,8 +176,8 @@ public class M23C10extra extends Mouse {
 
         movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos, celdaActual);
 
-        System.err.println("Pasos=" + (int) this.getSteps() + ", Casillas Exploradas=" + celdasTotales.size()
-                + ", RatioExp=" + (float) celdasTotales.size() / 400 + ", CeldasAhora=" + celdasVisitadas.size());
+        //System.err.println("Pasos=" + (int) this.getSteps() + ", Casillas Exploradas=" + celdasTotales.size()
+        //        + ", RatioExp=" + (float) celdasTotales.size() / 400 + ", CeldasAhora=" + celdasVisitadas.size());
 
         return movimientoFinal;
     }

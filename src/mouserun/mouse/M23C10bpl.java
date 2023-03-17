@@ -145,7 +145,7 @@ public class M23C10bpl extends Mouse {
 
         movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos);
 
-        System.err.println("Pasos=" + (int) this.getSteps() + ", CeldasTotales=" + celdasVisitadas.size());
+        // System.err.println("Pasos=" + (int) this.getSteps() + ", CeldasTotales=" + celdasVisitadas.size());
 
         return movimientoFinal;
     }
