@@ -15,14 +15,10 @@ import mouserun.game.Cheese;
 public class M23C10bpl extends Mouse {
     private final static int MAS_PRIORITARIO = 0;
     private final static int LIMITE = 200;
-    private static Boolean mostrar = true;
-    private Grid ultimaCeldaVisitada;
-    // (Cordenadas, celda)
-    private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas;
-    private HashMap<Pair<Integer, Integer>, Grid> celdasTotales;
+    private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas; // (Cordenadas, celda)
+    private final HashMap<Pair<Integer, Integer>, Grid> celdasTotales;
     private Stack<Integer> pilaMovimientos;
 
-    // Para mostrar mensajes System.err.println();
     public M23C10bpl() {
         super("JD-CO-bpl");
         celdasVisitadas = new HashMap<>();
@@ -191,126 +187,8 @@ public class M23C10bpl extends Mouse {
         celdasVisitadas = new HashMap<Pair<Integer, Integer>, Grid>();
     }
 
-    /**
-     * Verifica si la celda actual es distinta de la última celda visitada
-     *
-     * @param miDireccion dirección en la que se mueve el raton
-     * @param celdaActual celda actual en la que se encuentra el raton
-     * @return true si la celda actual es distinta de la última celda visitada, false en caso contrario
-     */
-    public boolean celdaEsDistinta(int miDireccion, Grid celdaActual) {
-
-        int posXActual, posYActual, posXAnterior, posYAnterior;
-        boolean celdaEsDistinta;
-
-        if (ultimaCeldaVisitada == null) {
-            return true;
-        }
-
-        posXActual = celdaActual.getX();
-        posYActual = celdaActual.getY();
-
-        posXAnterior = ultimaCeldaVisitada.getX();
-        posYAnterior = ultimaCeldaVisitada.getY();
-
-        switch (miDireccion) {
-            // Si estoy mirando a:
-            case UP -> posYActual += 1;
-            case DOWN -> posYActual -= 1;
-            case LEFT -> posXActual -= 1;
-            case RIGHT -> posXActual += 1;
-        }
-
-        celdaEsDistinta = !(posXAnterior == posXActual && posYAnterior == posYActual);
-
-        return celdaEsDistinta;
-    }
-
-    /**
-     * Comprueba si la celda esta almacenada en mi lista de celdas visitadas
-     *
-     * @param celdaActual la celda actual del raton
-     * @param miDireccion la dirección en la que está mirando el raton
-     * @return true si la celda ya ha sido visitada, false en caso contrario
-     */
-    public boolean celdaYaVisitada(Grid celdaActual, int miDireccion) {
-
-        int posXActual, posYActual;
-        Pair<Integer, Integer> coordenadas;
-        boolean casillaPreviamenteVisitada;
-
-        posXActual = celdaActual.getX();
-        posYActual = celdaActual.getY();
-
-        switch (miDireccion) {
-            // Si estoy mirando a:
-            case UP -> posYActual += 1;
-            case DOWN -> posYActual -= 1;
-            case LEFT -> posXActual -= 1;
-            case RIGHT -> posXActual += 1;
-        }
-        coordenadas = new Pair<>(posXActual, posYActual);
-
-        casillaPreviamenteVisitada = celdasVisitadas.containsKey(coordenadas);
-
-        return casillaPreviamenteVisitada;
-    }
-
-    public boolean estoyMasArriba(Grid celdaActual, Grid celdaAnterior) {
-
-        int posYActual, posYAnterior;
-        boolean estoyMasArriba;
-
-        posYActual = celdaActual.getY();
-        posYAnterior = celdaAnterior.getY();
-
-        estoyMasArriba = posYActual > posYAnterior;
-
-        return estoyMasArriba;
-    }
-
-    public boolean estoyMasAbajo(Grid celdaActual, Grid celdaAnterior) {
-
-        int posYActual, posYAnterior;
-        boolean estoyMasAbajo;
-
-        posYActual = celdaActual.getY();
-        posYAnterior = celdaAnterior.getY();
-
-        estoyMasAbajo = posYActual < posYAnterior;
-
-        return estoyMasAbajo;
-    }
-
-    public boolean estoyMasDerecha(Grid celdaActual, Grid celdaAnterior) {
-
-        int posXActual, posXAnterior;
-        boolean estoyMasDerecha;
-
-        posXActual = celdaActual.getX();
-        posXAnterior = celdaAnterior.getX();
-
-        estoyMasDerecha = posXActual > posXAnterior;
-
-        return estoyMasDerecha;
-    }
-
-    public boolean estoyMasIzquierda(Grid celdaActual, Grid celdaAnterior) {
-
-        int posXActual, posXAnterior;
-        boolean estoyMasIzquierda;
-
-        posXActual = celdaActual.getX();
-        posXAnterior = celdaAnterior.getX();
-
-        estoyMasIzquierda = posXActual < posXAnterior;
-
-        return estoyMasIzquierda;
-    }
-
-
     // Pair class
-    class Pair<U, V> {
+    static class Pair<U, V> {
 
         public final U first;       // el primer campo de un par
         public final V second;      // el segundo campo de un par
@@ -355,4 +233,4 @@ public class M23C10bpl extends Mouse {
 
     }
 
-} // class MXXA04A
+}
