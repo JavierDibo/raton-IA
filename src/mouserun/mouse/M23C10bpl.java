@@ -2,6 +2,7 @@ package mouserun.mouse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 import java.util.Stack;
 
 import mouserun.game.Mouse;
@@ -12,17 +13,15 @@ import mouserun.game.Cheese;
  * @author Javier Francisco Dibo Gomez
  * @author Cristian Ojeda del Moral
  */
-public class M23C10extra extends Mouse {
+public class M23C10bpl extends Mouse {
     private final static int MAS_PRIORITARIO = 0;
     private final static int LIMITE = 200;
     private HashMap<Pair<Integer, Integer>, Grid> celdasVisitadas; // (Cordenadas, celda)
-    private final HashMap<Pair<Integer, Integer>, Grid> celdasTotales;
     private Stack<Integer> pilaMovimientos;
 
-    public M23C10extra() {
-        super("JD-CO-extra");
+    public M23C10bpl() {
+        super("JD-CO-bpl");
         celdasVisitadas = new HashMap<>();
-        celdasTotales = new HashMap<>();
         pilaMovimientos = new Stack<>();
         incExploredGrids();
     }
@@ -48,11 +47,8 @@ public class M23C10extra extends Mouse {
 
     /**
      * Este metodo calcula los movimientos posibles que el raton puede hacer en la celda actual en el laberinto.
-     * Se basa en las celdas vecinas de la celda actual y llama al metodo registrarCamino() para agregar los
-     * movimientos posibles a la lista de movimientos pasada como parametro. Tiene en cuenta el limite de profundidad,
-     * si este se alcanza se deja de tener en cuenta los posibles caminos, pues se consideran fuera de limites. Se toma
-     * una decision a la hora de elegir ramas en el arbol, el raton toma los caminos en sentido horario comenzando por
-     * la izquierda.
+     * Se basa en las celdas vecinas de la celda actual y agrega los movimientos posibles a la lista de movimientos
+     * pasada como parametro.
      *
      * @param celdaActual      la celda actual en la que se encuentra el raton.
      * @param listaMovimientos la lista de movimientos posibles a la que se agregaran los movimientos calculados.
@@ -82,44 +78,21 @@ public class M23C10extra extends Mouse {
     }
 
     /**
-     * Este metodo devuelve el siguiente movimiento del raton siguiente un orden. Concretamente, el raton toma las
-     * direcciones Izquierda, Arriba, Derecha o Abajo, en ese orden, de ser posible. Este metodo sustituye la
-     * funcionalidad previa que tomaba un movimiento aleatorio.
-     *
-     * @param celdaActual la celda actual en la que se encuentra el raton.
-     */
-    public int movimientoRigido(Grid celdaActual) {
-
-        if (celdaActual.canGoLeft()) {
-            return Mouse.LEFT;
-        }
-        if (celdaActual.canGoUp()) {
-            return Mouse.UP;
-        }
-        if (celdaActual.canGoRight()) {
-            return Mouse.RIGHT;
-        }
-        if (celdaActual.canGoDown()) {
-            return Mouse.DOWN;
-        }
-
-        return 0;
-    }
-
-    /**
      * Este metodo decide el siguiente movimiento del raton en el laberinto. Si hay movimientos nuevos disponibles,
      * elige el mas prioritario entre ellos y lo agrega a una pila de movimientos. Si no hay movimientos nuevos
      * disponibles y la pila de movimientos no esta vacia, retrocede al ultimo movimiento en la pila. Si no hay
-     * movimientos nuevos disponibles y la pila de movimientos esta vacia, elige un movimiento en un orden concreto.
+     * movimientos nuevos disponibles y la pila de movimientos esta vacia, elige un movimiento al azar.
      *
      * @param hayMovimientosNuevos un indicador booleano que indica si hay movimientos nuevos disponibles.
      * @param listaMovimientos     la lista de movimientos posibles a partir de la celda actual.
      * @return el siguiente movimiento del raton a realizar.
      */
-    public int decidirMovimiento(boolean hayMovimientosNuevos, ArrayList<Integer> listaMovimientos, Grid celdaActual) {
+    public int decidirMovimiento(boolean hayMovimientosNuevos, ArrayList<Integer> listaMovimientos) {
 
         int movimientoFinal, ultimoMovimiento;
+        Random aleatorio;
 
+        aleatorio = new Random();
         movimientoFinal = 0;
 
         if (hayMovimientosNuevos) {
@@ -135,7 +108,7 @@ public class M23C10extra extends Mouse {
                 case Mouse.LEFT -> movimientoFinal = Mouse.RIGHT;
             }
         } else {
-            movimientoFinal = movimientoRigido(celdaActual);
+            movimientoFinal = aleatorio.nextInt(4) + 1;
         }
 
         return movimientoFinal;
@@ -143,9 +116,8 @@ public class M23C10extra extends Mouse {
 
     /**
      * Este metodo mueve el raton a la siguiente celda del laberinto. Primero registra la celda actual en un Map para
-     * evitar visitas repetidas, para evitar problemas en entorno multiagente, se utiliza otro mapa temporal que
-     * almacena los movimientos hasta que se pise una bomba. Luego genera una lista de movimientos posibles a partir de
-     * la celda actual y elige un movimiento. Finalmente, devuelve el movimiento elegido.
+     * evitar visitas repetidas, luego genera una lista de movimientos posibles a partir de la celda actual y elige un
+     * movimiento. Finalmente, devuelve el movimiento elegido.
      *
      * @param celdaActual la celda actual en la que se encuentra el raton.
      * @param cheese      el queso que el raton esta buscando.
@@ -165,23 +137,22 @@ public class M23C10extra extends Mouse {
         posY = celdaActual.getY();
         coordenadas = new Pair<>(posX, posY);
 
-        if (!celdasTotales.containsKey(coordenadas))
-            celdasTotales.put(coordenadas, celdaActual);
-
         celdasVisitadas.put(coordenadas, celdaActual);
 
         movimientosPosibles(celdaActual, listaMovimientos);
 
         hayMovimientosNuevos = !listaMovimientos.isEmpty();
 
-        movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos, celdaActual);
+        movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos);
 
         return movimientoFinal;
     }
 
     /**
-     * Se ejecuta cuando se encuentra un nuevo queso. Como el queso puede ser encontrado por otro agente, se resetea
-     * la informacion local para poder tener las misma oportunidades de encontrar el queso.
+     * Este metodo se ejecuta cuando se encuentra un queso. Como el queso aparece aleatoriamente, se borra la memoria
+     * del agente para otorgarle la posibilidad de comenzar nuevamente la busqueda de este. Cabe notar que el queso
+     * puede estar fuera de limites, en cuyo caso el raton exploraria todo el laberinto dentro de sus limites sin
+     * encontrarlo.
      */
     @Override
     public void newCheese() {
@@ -189,18 +160,14 @@ public class M23C10extra extends Mouse {
         pilaMovimientos = new Stack<Integer>();
     }
 
-    /**
-     * Se ejecuta cuando el raton pisa una bomba. Como la bomba coloca al raton en un posicion aleatoria, el raton
-     * elemina los datos obtenidos pues no puede trabajar con ellos por perder su referencia.
-     */
     @Override
     public void respawned() {
-        pilaMovimientos = new Stack<Integer>();
-        celdasVisitadas = new HashMap<Pair<Integer, Integer>, Grid>();
+
     }
 
     // Pair class
     static class Pair<U, V> {
+
         public final U first;       // el primer campo de un par
         public final V second;      // el segundo campo de un par
 
@@ -241,5 +208,7 @@ public class M23C10extra extends Mouse {
         public String toString() {
             return "(" + first + ", " + second + ")";
         }
+
     }
+
 }
