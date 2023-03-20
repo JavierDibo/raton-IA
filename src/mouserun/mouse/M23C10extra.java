@@ -176,8 +176,8 @@ public class M23C10extra extends Mouse {
 
         movimientoFinal = decidirMovimiento(hayMovimientosNuevos, listaMovimientos, celdaActual);
 
-        //System.err.println("Pasos=" + (int) this.getSteps() + ", Casillas Exploradas=" + celdasTotales.size()
-        //        + ", RatioExp=" + (float) celdasTotales.size() / 400 + ", CeldasAhora=" + celdasVisitadas.size());
+        System.out.println("Pasos=" + (int) this.getSteps() + ", Casillas Exploradas=" + celdasTotales.size()
+                + ", RatioExp=" + (float) celdasTotales.size() / 800 + ", CeldasAhora=" + celdasVisitadas.size());
 
         return movimientoFinal;
     }
